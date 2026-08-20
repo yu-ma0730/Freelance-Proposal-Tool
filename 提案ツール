@@ -103,6 +103,13 @@ textarea::placeholder,input::placeholder{color:var(--muted);font-size:0.8rem;}
 .reason-title{font-size:0.72rem;font-weight:700;color:var(--muted);letter-spacing:0.06em;margin-bottom:8px;}
 .reason-text{font-size:0.86rem;line-height:1.85;color:var(--text);white-space:pre-wrap;}
 
+.reason-section{display:flex;flex-direction:column;gap:16px;}
+.reason-subsection{background:var(--bg);border-radius:8px;padding:12px;border-left:4px solid var(--primary);}
+.reason-subsection:nth-child(2){border-left-color:#7c3aed;}
+.reason-subsection:nth-child(3){border-left-color:#16a34a;}
+.reason-subsection .reason-title{margin-bottom:8px;color:var(--text);font-weight:700;}
+.reason-subsection .reason-text{font-size:0.88rem;line-height:1.75;}
+
 .image-upload-section{
   border:2px dashed var(--border);
   border-radius:10px;
@@ -775,7 +782,7 @@ document.getElementById('btnAssess').addEventListener('click', async function() 
   document.getElementById('loading').classList.add('show');
   document.getElementById('btnAssess').disabled = true;
 
-  var prompt = 'あなたはフリーランス案件を評価する専門家です。以下のユーザープロフィールと案件情報をもとに査定してください。\n\n'
+  var prompt = 'あなたはビジネスコンサルタント兼キャリアアドバイザーです。フリーランスの方の「相手の未来を具体化する」視点から、専門的な案件査定を行ってください。\n\n'
     + '【ユーザープロフィール】\n'
     + '職歴・経験：' + p1 + '\n'
     + '得意なスキル：' + (p2||'未記載') + '\n'
@@ -784,24 +791,37 @@ document.getElementById('btnAssess').addEventListener('click', async function() 
     + '生活上の制約・事情：' + (p5||'未記載') + '\n\n'
     + '【案件情報】\n'
     + 'タイトル：' + (f0||'未記載') + '\n'
-    + '契約形態：' + (f2||'未記載') + '\n'
-    + '期間：' + (f5||'未記載') + '\n'
     + '仕事の詳細：' + f1 + '\n'
     + '応募条件：' + (f9||'未記載') + '\n'
     + '勤務条件：' + (f8||'未記載') + '\n'
+    + '契約形態：' + (f2||'未記載') + '\n'
+    + '期間：' + (f5||'未記載') + '\n'
     + '報酬：' + (f3||'未記載') + '\n'
     + '稼働時間/週：' + (f4||'未記載') + '\n'
     + '必要なスキル：' + (f6||'未記載') + '\n'
     + 'クライアント評価：' + (f7||'未記載') + '\n\n'
-    + '【査定ルール】\n'
-    + '・生活上の制約は最優先。稼働時間・時間帯が合わない場合は必ずrank=5にすること\n'
-    + '・苦手・避けたいことに該当する業務が含まれる場合はrank=4以上にすること\n'
-    + '・ランク基準：1=経験スキルが完全に合致し即戦力、2=多少不足があるが十分対応可能、3=努力すれば対応可能、4=スキル・条件面で大きな不足あり、5=制約や経験不足で対応不可\n\n'
-    + '【理由の書き方】必ず以下の3点を含めて300字以内で書くこと：\n'
-    + '①スキル面：経験・スキルが案件要件とどう合っているか（合う点・不足点を具体的に）\n'
-    + '②条件面：稼働時間・報酬・勤務スタイルがユーザーの希望と合っているか\n'
-    + '③制約面：生活上の制約や苦手なことと案件内容が衝突していないか\n\n'
-    + '必ずJSON形式のみで回答してください：{"rank":3,"reason":"理由を300字以内で"}';
+    + '【コンサルティング視点での分析】\n'
+    + '1. インサイト（洞察力）：この案件の本質的な特徴、ユーザーの成長機会、隠れたリスクを見抜く\n'
+    + '2. ロジック（論理的思考力）：スキルギャップの埋め方、制約条件下での実現可能性を客観的に判断\n'
+    + '3. エンパシー（共感・想像力）：ユーザーの制約や懸念を心から理解し、誠実に向き合う\n\n'
+    + '【ランク基準】\n'
+    + '1: 経験・スキルが完全に合致し即戦力。生活制約との葛藤なし。ベストマッチ。\n'
+    + '2: スキル面で多少不足があるが十分対応可能。制約内で実現可能な好機会。\n'
+    + '3: 努力で対応可能。成長機会がある反面、一定のチャレンジあり。\n'
+    + '4: スキル・条件面で課題が多い。実現には相応の工夫が必要。推奨度低い。\n'
+    + '5: 制約や経験不足で対応困難。リスクが大きい。推奨しない。\n\n'
+    + '【理由に含めるべき4つの視点】（600字程度）\n'
+    + '①現状分析：ユーザーの経験・スキルと案件要件の具体的なマッチング度\n'
+    + '②機会分析：この案件を通じて何が学べ、キャリア・スキルにどう活きるか\n'
+    + '③実現への筋道：生活上の制約や不得意な領域の中で、実現する具体的な道筋\n'
+    + '④懸念と対策：正直に指摘すべき課題やリスク、およびそれに対する現実的な対策\n\n'
+    + '【JSON出力形式】必ず以下の形式で、JSONのみ返してください：\n'
+    + '{\n'
+    + '  "rank": (1-5の数字),\n'
+    + '  "reason": "現状分析→機会分析→実現への筋道→懸念と対策の4点を含めた専門的な見立て（600字程度）",\n'
+    + '  "insight": "ビジネスコンサルタントとしての最も重要な洞察（150字程度。この案件の本質的な特徴や、ユーザーが見落としやすいポイント）",\n'
+    + '  "nextAction": "もしこの案件を選ぶなら、内定後・スタート前に最初にすべき具体的なアクション（100字程度）"\n'
+    + '}\n\n注意：ユーザーの生活上の制約は絶対優先。稼働時間・時間帯が合わない場合は必ずrank=5。';
 
   try {
     var res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -813,8 +833,8 @@ document.getElementById('btnAssess').addEventListener('click', async function() 
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2048,
         messages: [{role:'user', content:prompt}]
       })
     });
@@ -828,6 +848,8 @@ document.getElementById('btnAssess').addEventListener('click', async function() 
 
     var rank = parseInt(parsed.rank);
     var reason = parsed.reason || '判定できませんでした';
+    var insight = parsed.insight || '';
+    var nextAction = parsed.nextAction || '';
     if (isNaN(rank)||rank<1||rank>5) rank=3;
 
     var rd = RD[rank];
@@ -855,7 +877,16 @@ document.getElementById('btnAssess').addEventListener('click', async function() 
     lbl.className = 'rank-label '+rd.lc;
     lbl.textContent = rd.label;
 
-    document.getElementById('reasonText').textContent = reason;
+    var reasonBoxHTML = '<div class="reason-section">';
+    reasonBoxHTML += '<div class="reason-subsection"><div class="reason-title">📋 分析・評価</div><div class="reason-text">'+reason.replace(/\n/g,'<br>')+'</div></div>';
+    if (insight) {
+      reasonBoxHTML += '<div class="reason-subsection"><div class="reason-title">💡 コンサルタントからの洞察</div><div class="reason-text">'+insight.replace(/\n/g,'<br>')+'</div></div>';
+    }
+    if (nextAction) {
+      reasonBoxHTML += '<div class="reason-subsection"><div class="reason-title">🎯 次のアクション</div><div class="reason-text">'+nextAction.replace(/\n/g,'<br>')+'</div></div>';
+    }
+    reasonBoxHTML += '</div>';
+    document.getElementById('reasonText').innerHTML = reasonBoxHTML;
     document.getElementById('loading').classList.remove('show');
     document.getElementById('btnAssess').disabled = false;
     goTo(4);
