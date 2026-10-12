@@ -1,0 +1,4 @@
+# Jekyll configuration for GitHub Pages
+theme: null
+plugins: []
+markdown: kramdown
