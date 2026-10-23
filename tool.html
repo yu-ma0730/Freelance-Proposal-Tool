@@ -356,12 +356,20 @@ textarea::placeholder,input::placeholder{color:var(--muted);font-size:0.8rem;}
         <div class="rank-label" id="rankLabel"></div>
       </div>
       <hr class="divider">
+      <div style="background:#f5f3ff;border:1px solid #ddd6fe;border-radius:8px;padding:12px;margin-bottom:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:#8a90a8;letter-spacing:0.06em;margin-bottom:6px;">📌 案件ID</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div id="caseId" style="font-size:0.95rem;font-weight:700;color:#7c3aed;flex:1;word-break:break-all;"></div>
+          <button class="btn" id="btnCopyId" style="background:#7c3aed;color:#fff;padding:8px 12px;font-size:0.8rem;width:auto;flex-shrink:0;">📋 コピー</button>
+        </div>
+        <p id="copyIdStatus" style="font-size:0.72rem;color:#16a34a;text-align:center;display:none;margin-top:6px;">✓ コピーしました</p>
+      </div>
       <div class="reason-box">
         <div class="reason-title">理由・ポイント</div>
         <div class="reason-text" id="reasonText"></div>
       </div>
       <hr class="divider">
-      <button class="btn btn-primary" id="btnCopy" style="background:#7c3aed;">📋 フィードバック管理ツールにコピー</button>
+      <button class="btn btn-primary" id="btnCopy" style="background:#7c3aed;">📋 提案内容をコピー</button>
       <p id="copyStatus" style="font-size:0.75rem;color:#16a34a;text-align:center;display:none;margin-top:8px;">✓ コピーしました</p>
       <button class="btn btn-primary" id="btnAnother">別の案件を査定する →</button>
       <hr class="divider">
@@ -729,6 +737,17 @@ document.getElementById('btn2back').addEventListener('click', function() { goTo(
 document.getElementById('btn3back').addEventListener('click', function() { goTo(2); });
 document.getElementById('btn4back').addEventListener('click', function() { goTo(3); });
 
+document.getElementById('btnCopyId').addEventListener('click', function() {
+  var caseId = document.getElementById('caseId').textContent;
+  navigator.clipboard.writeText(caseId).then(function() {
+    var status = document.getElementById('copyIdStatus');
+    status.style.display = 'block';
+    setTimeout(function() { status.style.display = 'none'; }, 2000);
+  }).catch(function(err) {
+    alert('コピーに失敗しました: ' + err);
+  });
+});
+
 document.getElementById('btnCopy').addEventListener('click', function() {
   var summary = document.getElementById('summary').innerText || '';
   var rank = document.getElementById('rankLabel').innerText || '';
@@ -887,6 +906,10 @@ document.getElementById('btnAssess').addEventListener('click', async function() 
     document.getElementById('summary').innerHTML = rows.map(function(r){
       return '<div class="srow"><span class="slabel">'+r[0]+'</span><span class="sval">'+r[1]+'</span></div>';
     }).join('');
+
+    var caseId = 'CASE-' + new Date().getTime() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+    document.getElementById('caseId').textContent = caseId;
+    try { localStorage.setItem('lastCaseId', caseId); } catch(e2) {}
 
     var circle = document.getElementById('rankCircle');
     circle.className = 'rank-circle '+rd.rc;
