@@ -3,6 +3,10 @@ Freelance Proposal Tool
 
 フリーランスの提案内容を AI で自動評価し、案件適性を判定するツールです。
 
+## 🚀 今すぐ使う
+
+👉 **公開ページ：** https://yu-ma0730.github.io/Freelance-Proposal-Tool/
+
 ## 概要
 
 フリーランスが企業からの案件（クラウドワークス、ランサーズなど）を受け取った時、以下を判定します：
