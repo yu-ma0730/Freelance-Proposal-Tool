@@ -1,4 +1,3 @@
-# Jekyll configuration for GitHub Pages
+# GitHub Pages will serve static files
 theme: null
 plugins: []
-markdown: kramdown
